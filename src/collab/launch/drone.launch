@@ -1,0 +1,4 @@
+<launch>
+	<node name="drone" pkg="collab" type="drone" output="screen"/>
+	<node name="px4_com" pkg="collab" type="px4_com.py" output="screen" />
+<launch>

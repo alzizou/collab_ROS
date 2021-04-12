@@ -1,0 +1,5 @@
+<launch>
+	<node name="payload" pkg="collab" type="payload" output="screen" />
+	<node name="px4_com" pkg="collab" type="px4_com.py" output="screen" />
+<launch>
+
