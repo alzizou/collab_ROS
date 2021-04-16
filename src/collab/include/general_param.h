@@ -65,7 +65,7 @@ void mat_trn(std::vector<std::vector<float>> inp1, std::vector<std::vector<float
 void vec_add(std::vector<float> inp1, std::vector<float> inp2, \
              std::vector<float> &out, int n_inp, float sgn_inp){
     for (int i=0;i<n_inp;i++){
-	out[i][j] = inp1[i][j] + (sgn_inp * inp2[i][j]);
+	out[i] = inp1[i] + (sgn_inp * inp2[i]);
     }
 }
 
@@ -89,6 +89,11 @@ struct slid_diff_var{
     float diff_val = 0.0;
     float variable1 = 0.0;
     float variable2 = 0.0;
+};
+
+struct slid_gains{
+    float k1 = 1.0;
+    float k2 = 0.1;
 };
 
 struct desired_force{

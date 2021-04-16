@@ -29,6 +29,7 @@ class observer{
 	float l_link;
 	std::vector<std::vector<float>> rho_load;
 	std::vector<slid_diff_var> omg_diffs;
+	slid_gains gains;
 
 	payload_obj load_obj;
 	Rel_Drn_load rel_obj;
@@ -56,7 +57,7 @@ void observer::Init(int inp_ID, int inp_n, int inp_m, int inp_k, float inp_q, fl
     Drn_ID = inp_ID;
     l_link = inp_l;
     for (int i=0;i<4;i++){
-	rho_load[i].assign(inp_rho[i].begin(),inp_rho[i].end);
+	rho_load[i].assign(inp_rho[i].begin(),inp_rho[i].end());
     }
 
     A.resize(n,std::vector<float>(n,0.0));
@@ -73,7 +74,7 @@ void observer::Init(int inp_ID, int inp_n, int inp_m, int inp_k, float inp_q, fl
     x_hat.resize(n,0.0);
     u.resize(m,0.0);
     y.resize(k,0.0);
-    omg_diffs.resize(3,0.0);
+    omg_diffs.resize(3);
 
     for (int i=0;i<n;i++){
 	Q[i][i] = q;
@@ -167,8 +168,8 @@ void observer::Construct_measurements(){
 
     //--------------------------------------------------
 
-    std::vector<float> u_var1;
-    std::vector<float> u_var2;
+    std::vector<std::vector<float>> u_var1;
+    std::vector<std::vector<float>> u_var2;
     std::vector<float> u_var3;
     std::vector<float> u_var4;
 
@@ -211,7 +212,7 @@ void observer::Construct_xhat(void){
     std::vector<float> x_var6;
     x_var6.resize(n,0.0);
 
-    mat_vec_dot(A, x, x_var1, n, n);
+    mat_vec_dot(A, x_hat, x_var1, n, n);
     mat_vec_dot(B, u, x_var2, n, m);
     vec_add(x_var1, x_var2, x_var3, n, +1.0);
     mat_vec_dot(C, x_var3, x_var4, k, n);
@@ -248,11 +249,13 @@ void observer::main(float inp_dt, std::vector<float> inp_rel_pos_local, std::vec
 }
 
 void observer::slid_diff_method(int inp_i){
+
     float eta = omg_diffs[inp_i].variable1 - load_obj.omg[inp_i];
     omg_diffs[inp_i].diff_val = (-1.0 * gains.k1 * pow(abs_ali(eta),0.5) * sgn_ali(eta) ) + omg_diffs[inp_i].variable2;
     float D_variable1 = omg_diffs[inp_i].diff_val;
     float D_variable2 = -1.0 * gains.k2 * sgn_ali(eta);
     omg_diffs[inp_i].variable1 = omg_diffs[inp_i].variable1 + (D_variable1 * dt);
     omg_diffs[inp_i].variable2 = omg_diffs[inp_i].variable2 + (D_variable2 * dt);
+
 }
 

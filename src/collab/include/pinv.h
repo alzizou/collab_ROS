@@ -8,7 +8,7 @@ class pinv{
 	std::vector<std::vector<float>> B_ext;
 	std::vector<float> Z_ext;
 	std::vector<float> des_acc; // desired linear and angular acceleration of the payload
-	std::vector<float> mue;
+	std::vector<float> mu;
 
 	std::vector<desired_force> desired_force_val;
 
@@ -25,7 +25,7 @@ class pinv{
 	void Construct_Sub_B(int);
 	void Construct_Z(void);
 	void Construct_mu(void);
-	void main(void);
+	void main(payload_obj);
 	void updating_load(payload_obj);
 	void determining_desired_forces(void);
 
@@ -152,14 +152,14 @@ void pinv::Construct_Z(void){
     }
     mat_vec_dot(rot_mat_trn, Z0_var1, Z0, 3, 3);
     for (int i=0;i<3;i++){
-	Z0[i] = load_obj.mass_load * Z_ext[i];
+	Z0[i] = load_obj.mass_load * Z0[i];
     }
 
     float h1 = (des_rx - (2.0*load_obj.dim1_load)) / (2.0*load_obj.link_lenght);
     float h2 = (des_ry - (2.0*load_obj.dim2_load)) / (2.0*load_obj.link_lenght);
 
-    float k1 = (-1.0) * pow( ( ((pow((Z0(2)/2.0),2.0)) + (pow((Z0(3)/4.0),2.0))) / ((1.0/(pow(h1,2))) - 1) ),0.5 );
-    float k2 = (-1.0) * pow( ( ((pow((Z0(1)/2.0),2.0)) + (pow((Z0(3)/4.0),2.0))) / ((1.0/(pow(h2,2))) - 1) ),0.5 );
+    float k1 = (-1.0) * pow( ( ((pow((Z0[1]/2.0),2.0)) + (pow((Z0[2]/4.0),2.0))) / ((1.0/(pow(h1,2.0))) - 1.0) ),0.5 );
+    float k2 = (-1.0) * pow( ( ((pow((Z0[0]/2.0),2.0)) + (pow((Z0[2]/4.0),2.0))) / ((1.0/(pow(h2,2.0))) - 1.0) ),0.5 );
 
     Z_ext[6] = 0.0;
     Z_ext[7] = 0.0;
@@ -183,13 +183,13 @@ void pinv::Construct_mu(void){
     B_ext_trn.resize(m,std::vector<float>(n,0.0));
     mat_trn(B_ext, B_ext_trn, n, m);
 
-    mat_dot(B_ext, B_Ext_trn, mu_var1, n, m, n);
+    mat_dot(B_ext, B_ext_trn, mu_var1, n, m, n);
 
     inverse B_inverse;
     B_inverse.Init(mu_var1,m);
     B_inverse.Construct_Inv();
 
-    mat_dot(B_Ext_trn, B_inverse.A_Inv, mu_var3, m, n, n);
+    mat_dot(B_ext_trn, B_inverse.A_Inv, mu_var3, m, n, n);
     mat_vec_dot(mu_var3, Z_ext, mu, m, n);
 
 }

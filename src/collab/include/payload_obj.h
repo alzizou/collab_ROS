@@ -6,7 +6,7 @@
 class payload_obj{
     public:
 	std::vector<float> Eulers;
-	std::vector<float> quat;
+	std::vector<float> quat; //quat.w=quat[0] , quat.x=quat[1] , quat.y=quat[2], quat.z=quat[3]
 	std::vector<float> pos;
 	std::vector<float> vel;
 	std::vector<float> acc;
@@ -57,17 +57,17 @@ void payload_obj::Init(void){
 
 void payload_obj::Construct_Rotation_Matrix(void){
 
-    rot_mat[0][0] = 1.0 - 2.0*(pow(quat.y,2)) - 2.0*(pow(quat.z,2));
-    rot_mat[0][1] = 2.0*quat.x*quat.y - 2.0*quat.z*quat.y;
-    rot_mat[0][2] = 2.0*quat.x*quat.z + 2.0*quat.y*quat.w;
+    rot_mat[0][0] = 1.0 - 2.0*(pow(quat[2],2)) - 2.0*(pow(quat[3],2));
+    rot_mat[0][1] = 2.0*quat[1]*quat[2] - 2.0*quat[3]*quat[2];
+    rot_mat[0][2] = 2.0*quat[1]*quat[3] + 2.0*quat[2]*quat[0];
 
-    rot_mat[1][0] = 2.0*quat.x*quat.y + 2.0*quat.z*quat.w;
-    rot_mat[1][1] = 1.0 - 2.0*(pow(quat.x,2)) - 2.0*(pow(lquat.z,2));
-    rot_mat[1][2] = 2.0*quat.y*quat.z - 2.0*quat.x*quat.w;
+    rot_mat[1][0] = 2.0*quat[1]*quat[2] + 2.0*quat[3]*quat[0];
+    rot_mat[1][1] = 1.0 - 2.0*(pow(quat[1],2)) - 2.0*(pow(quat[3],2));
+    rot_mat[1][2] = 2.0*quat[2]*quat[3] - 2.0*quat[1]*quat[0];
 
-    rot_mat[2][0] = 2.0*quat.x*quat.z - 2.0*quat.y*quat.w;
-    rot_mat[2][1] = 2.0*quat.y*quat.z + 2.0*quat.x*quat.w;
-    rot_mat[2][2] = 1.0 - 2.0*(pow(quat.x,2)) - 2.0*(pow(quat.y,2));
+    rot_mat[2][0] = 2.0*quat[1]*quat[3] - 2.0*quat[2]*quat[0];
+    rot_mat[2][1] = 2.0*quat[2]*quat[3] + 2.0*quat[1]*quat[0];
+    rot_mat[2][2] = 1.0 - 2.0*(pow(quat[1],2)) - 2.0*(pow(quat[2],2));
 
 }
 
